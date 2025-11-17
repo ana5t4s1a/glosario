@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en"> <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Vocabulary Challenge</title> <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Fuente personalizada */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+
+        /* === NUEVO DISEÑO: PALETA "DEEP DIVE" (COMPLETA) === */
+
+        /* Keyframes para la animación del gradiente */
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            
+            /* === SOLUCIÓN FINAL: Fondo animado con la PALETA COMPLETA (Efecto Ola) === */
+            background: linear-gradient(
+                -45deg, 
+                #000020, /* Oscuro 1 */
+                #171a4a, 
+                #2f2c79, 
+                #5dc1b9, /* CLARO 1 (Turquesa) */
+                #9ce0db, /* CLARO 2 (Celeste) */
+                #2f2c79, 
+                #171a4a,
+                #000020 /* Oscuro 1 */
+            );
+            background-size: 800% 800%; /* Aumentado a 800% para más 'ola' */
+            animation: gradientBG 30s ease infinite; /* Animación más lenta y extendida */
+            
+            color: #d1d5db; /* Color de texto base (Gris claro) */
+
+            /* === ARREGLO: Alineación === */
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 10vh 1rem 1rem 1rem;
+            overflow-x: hidden;
+        }
+        /* ============================ */
+
+        /* Estilo base para las tarjetas/contenedores (El más oscuro) */
+        .card {
+            background-color: #000020;
+            box-shadow: 0 0 30px rgba(93, 193, 185, 0.15), 0 4px 10px rgba(0,0,0,0.2);
+            border: 1px solid #2f2c79;
+        }
+
+        /* ======================================================= */
+        /* === ESTILOS PARA GRADIENTE EN TEXTO Y BOTONES === */
+        /* ======================================================= */
+
+        /* * MODIFICADO: Clase para Título y Header. 
+         * Ahora usa un gradiente animado (efecto ola)
+         */
+        .text-gradient-contrast {
+            /* De Índigo a Celeste/Turquesa y de vuelta */
+            background: linear-gradient(90deg, #2f2c79, #9ce0db, #5dc1b9, #2f2c79);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite; /* Reutilizamos la animación */
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text; /* Propiedad estándar */
+            display: inline-block;
+        }
+
+        /* Clase para Botones Primarios: Fondo de Gradiente Animado con Texto Claro */
+        .btn-primary-gradient {
+            background: linear-gradient(-45deg, #5dc1b9, #2f2c79, #171a4a, #000020);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            
+            color: #ffffff; /* CLAVE: Texto blanco para contraste */
+            font-weight: 700;
+            transition: background 0.4s, transform 0.1s;
+            border-radius: 0.5rem;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+        }
+
+        .btn-primary-gradient:hover {
+            background-position: 100% 50%; 
+            transform: scale(1.02);
+        }
+
+        .btn-primary:active, .btn-primary-gradient:active { transform: scale(0.98); }
+
+        /* Estilos de botones primarios (antiguos, se mantienen para otras secciones) */
+        .btn-primary {
+            background-color: #5dc1b9; 
+            color: #000020; 
+            transition: background-color 0.2s, transform 0.1s, color 0.2s;
+            border-radius: 0.5rem;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background-color: #2f2c79;
+            color: #ffffff;
+        }
+        /* ======================================================= */
+
+        /* Estilos de feedback (bordes) */
+        .correct { border: 2px solid #10b981 !important; }
+        .incorrect { border: 2px solid #ef4444 !important; }
+        .near-miss { border: 2px solid #f59e0b !important; }
+
+        /* Estilos de botones secundarios (Dark Mode) */
+        .btn-secondary {
+            background-color: #334155;
+            color: #e0e7ff;
+            transition: background-color 0.2s, opacity 0.2s;
+            border-radius: 0.5rem;
+            border: 1px solid #475569;
+        }
+        .btn-secondary:hover:not(:disabled) { background-color: #475569; }
+        .btn-secondary:disabled { cursor: not-allowed; opacity: 0.5; }
+
+        /* Estilo para el modal (overlay) */
+        .modal { background-color: rgba(0, 0, 32, 0.9); }
+        .modal-content { max-width: 90%; max-height: 90vh; overflow-y: auto; }
+
+        /* Estilo para el display de la pista */
+        #hintDisplay { min-height: 32px; color: #e2e8f0; }
+
+        /* Estilo del encabezado principal (sin borde de color sólido) */
+        .main-header-gradient {
+             padding-bottom: 0.5rem;
+             border-bottom: 4px solid #2f2c79;
+        }
+
+        /* === ACENTOS TURQUESA RESTAURADOS === */
+        #difficultySlider {
+            -webkit-appearance: none; appearance: none;
+            width: 100%; height: 8px;
+            background: #2f2c79; 
+            outline: none;
+            opacity: 0.9; transition: opacity .2s; border-radius: 4px;
+        }
+        #difficultySlider::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 24px; height: 24px; border-radius: 50%;
+            background: #5dc1b9; /* TURQUESA */
+            cursor: pointer;
+            border: 4px solid #ffffff; 
+            box-shadow: 0 0 10px rgba(93, 193, 185, 0.5); /* Glow */
+        }
+        #difficultySlider::-moz-range-thumb {
+            width: 24px; height: 24px; border-radius: 50%;
+            background: #5dc1b9;
+            cursor: pointer;
+            border: 4px solid #ffffff;
+            box-shadow: 0 0 10px rgba(93, 193, 185, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="max-w-4xl mx-auto w-full p-6 sm:p-10"> 
+        
+        <header id="mainHeader" class="text-center mb-10">
+            <h1 class="text-4xl sm:text-5xl font-extrabold mb-2 main-header-gradient">
+                <span class="text-gradient-contrast">English Vocabulary Challenge</span>
+            </h1>
+            <p class="text-base font-semibold mb-4 text-gradient-contrast">
+                Project by Anastasia Oldoni | Subject: Technical English I systems analyst
+            </p> 
+            <p class="text-lg sm:text-xl font-bold text-gradient-contrast">
+                Test your knowledge using my glossary! </p>
+        </header>
+
+        <div id="welcomeScreen">
+             <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-8">
+                 <button id="showGlossaryBtn" class="btn-primary-gradient py-3 px-6 shadow-lg">
+                     View Full Glossary </button>
+                 <button id="startGameBtn" class="btn-primary-gradient py-3 px-6 shadow-lg">
+                     Start Challenge </button>
+             </div>
+        </div>
+
+        <div id="challengeSetupModal" class="card p-6 sm:p-8 rounded-xl hidden">
+            <h2 class="text-3xl font-extrabold text-[#9ce0db] mb-6 text-center">Challenge Setup</h2> <div class="mb-6 p-4 bg-[#000020] rounded-lg border-l-4 border-[#5dc1b9]">
+                <label class="block text-lg font-medium text-gray-200 mb-2" for="gameModeSelect">
+                    Game Mode </label>
+                <select id="gameModeSelect" class="w-full p-3 border border-[#2f2c79] rounded-lg shadow-sm focus:ring-[#5dc1b9] focus:border-[#5dc1b9] bg-[#2f2c79] text-white">
+                    <option value="es_to_en" selected>Spanish to English (Answer in English)</option> <option value="en_to_es">English to Spanish (Answer in Spanish)</option> <option value="mixed">Mixed (Random EN or ES Question)</option> </select>
+            </div>
+
+            <div class="mb-8 p-4 bg-[#000020] rounded-lg border-l-4 border-[#5dc1b9]">
+                <p class="text-lg font-medium text-gray-200 mb-4" id="difficultyLabel">
+                    Selected Difficulty: ALL (Mixed) </p>
+                <input type="range" id="difficultySlider" min="1" max="5" value="5" step="1" 
+                       class="w-full h-2 rounded-lg cursor-pointer transition duration-150">
+                <div class="flex justify-between text-sm text-gray-400 mt-2 font-mono">
+                    <span>Easy (1)</span> <span>Normal (2)</span> <span>Medium (3)</span> <span>Hard (4)</span> <span>All (5)</span> </div>
+            </div>
+
+            <button id="confirmStartGameBtn" class="btn-primary w-full py-3 px-6 shadow-md mb-4">
+                Start Game </button>
+            
+            <button id="setupGoHomeBtn" class="btn-secondary w-full py-3 px-6 shadow-md">
+                Back to Home </button>
+        </div>
+
+
+        <div id="gameSection" class="card p-6 sm:p-8 rounded-xl hidden">
+            
+            <button id="gameGoHomeBtn" class="btn-secondary text-sm py-2 px-4 mb-4">
+                &larr; Back to Home </button>
+            
+            <h2 class="text-2xl font-extrabold text-[#9ce0db] mb-6 text-center" id="gameModeTitle">Guess the Word (Spanish to English)</h2> <div id="statusContainer" class="text-center mb-4 text-lg font-medium text-gray-300">
+                Question: <span id="currentQuestionNumber" class="text-[#9ce0db] font-extrabold text-2xl">0</span> of <span id="totalQuestionsDisplay" class="text-[#9ce0db] font-extrabold text-2xl">10</span> | 
+                Score: <span id="currentScore" class="text-[#9ce0db] font-extrabold text-2xl">0</span> </div>
+
+            <div class="bg-[#000020] p-6 sm:p-8 rounded-lg border-l-4 border-[#5dc1b9] mb-6 min-h-[120px] flex items-center shadow-inner">
+                <p class="text-xl sm:text-3xl font-semibold text-white leading-snug" id="questionText">...</p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4">
+                <input type="text" id="answerInput" placeholder="Type your answer here..." class="flex-grow p-4 border-2 border-[#2f2c79] rounded-lg focus:outline-none focus:ring-4 focus:ring-[#5dc1B9] text-lg shadow-sm bg-[#2f2c79] text-white"
+                       >
+                
+                <button id="checkButton" class="btn-primary py-3 px-6 shadow-md">
+                    Check </button>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-between items-center mt-6 p-3 bg-[#000020] rounded-lg border border-[#2f2c79] shadow-inner space-y-3 sm:space-y-0">
+                <button id="hintButton" class="btn-secondary py-2 px-4 w-full sm:w-auto text-sm">
+                    Hint (<span id="hintsRemaining">3</span>/3) </button>
+                <div id="hintDisplay" class="text-2xl font-mono text-gray-200 tracking-wider font-extrabold p-1 rounded min-h-[32px]"></div>
+            </div>
+
+            <div id="feedbackMessage" class="mt-4 p-4 rounded-lg text-left font-bold hidden shadow-sm"></div>
+
+            <button id="nextButton" class="btn-secondary w-full mt-6 py-3 px-6 shadow-md hidden">
+                Next Word </button>
+        </div>
+    </div>
+
+    <div id="glossaryModal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div class="modal-content card p-6 sm:p-8 rounded-xl w-full md:w-3/4 lg:w-2/3">
+            <div class="flex justify-between items-center mb-4 pb-2">
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-[#9ce0db]">Full Glossary</h2> <button id="glossaryCloseXBtn" class="text-gray-400 hover:text-gray-100 text-3xl font-bold leading-none">&times;</button>
+            </div>
+            
+            <div class="mb-4 flex justify-end">
+                <label for="sortGlossaryBy" class="text-gray-300 mr-2 self-center text-sm font-medium">Sort by:</label> <select id="sortGlossaryBy" class="p-2 border border-[#2f2c79] rounded text-sm shadow-sm bg-[#2f2c79] text-white">
+                    <option value="english">English (A-Z)</option> <option value="spanish">Spanish (A-Z)</option> </select>
+            </div>
+            
+            <div id="glossaryContent" class="grid grid-cols-1 md:grid-cols-2 gap-4"> 
+                </div>
+            
+            <button id="glossaryCloseBtn" class="btn-primary w-full mt-8 py-3 px-6">
+                Close </button>
+        </div>
+    </div>
+
+    <div id="gameOverModal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div class="modal-content card p-8 rounded-xl text-center w-full max-w-sm">
+            <h2 class="text-3xl font-extrabold text-[#9ce0db] mb-4">Challenge Complete!</h2> <p class="text-xl text-gray-300 mb-6">Your final score is:</p> <p id="finalScore" class="text-6xl font-extrabold text-[#9ce0db] mb-8">0</p>
+            
+            <button id="gameOverRestartBtn" class="btn-primary-gradient w-full py-3 px-6 mb-4">
+                Play Again </button>
+            
+            <button id="gameOverHomeBtn" class="btn-secondary w-full py-3 px-6">
+                Back to Home </button>
+        </div>
+    </div>
+
+    <script>
+    // Envolvemos todo el código en una IIFE (Immediately Invoked Function Expression)
+    (function() {
+        "use strict"; // Habilitar modo estricto
+
+        // --- 1. MÓDULO DE DATOS (INCRUSTADO) ---
+        // Este es el glosario que tú proporcionaste
+        const rawGlossary = `
+IT/information technology=tecnologías de la información
+likewise=igualmente
+fit=encaja/ajusta
+current=actual
+wider=más amplio
+may/can=pueden/podría
+employer=empleadores
+gathering=juntar/almacenar
+liaising=agruparse
+such as=tales cómo
+feature=característica
+undertakes=comprometerse
+retailers=minoristas
+several=varios
+degree=título
+store=almacenamiento
+allow=permite
+tasks=tareas
+hard disk=disco duro
+blind=ciego
+heat sink=disipador
+attach=ensamblar
+gather/put together=reunir
+slot=ranura
+overheating=sobrecalentar
+what=qué/cuál
+when=cuándo
+where=dónde
+which=cuál
+who=quién
+why=por qué
+how=cómo
+how many (people/things)=cuántos/ cuántas
+how much (money/time)=cuánto/cuánta
+what kind of=qué tipo de
+power supply=fuente de alimentación
+how long=por cuánto tiempo
+as soon as=ni bien
+develops=desarrollar
+focuses=fijar
+doesn't make=no hace
+still interferes=todavía interfiere
+trusts=responsabilidad
+forward=enviar
+how often=cuán a menudo
+how's it going=cómo te está yendo
+how are you getting on=cómo te está yendo
+setting=configuración
+looking for=buscar
+work on=proyecto
+work in=empresa
+passage=pasaje/texto
+nearby=cercano
+drags=arrastrar
+width=ancho de página
+infer=deducir
+spreadsheet=hojas de cálculo
+field=campo
+table=cuadro/tabla
+arrange=organizar
+management=gestión/administración
+queries=consultas
+reports=informes
+sort=ordenar/administrar
+cell=celda
+worksheet=una hoja de cálculo
+should=deberías
+must=debér
+fewer=menos
+crop=cortar
+turn off/switch off=apagar
+turn on/switch on=encender
+lift=levantar
+safety=prevención
+switch=cambiar
+keep current=mantenerte al día
+between=entre
+upper=mayúscula
+lower=minúscula
+recipient=remitente
+misuse=mal uso
+ly=mente
+labelled features=características etiquetadas
+Typeface=tipo de letra
+Formatting toolbar=formateo de barra de herramientas
+Menu bar=barra de menú
+Increase indent=Incremento de indentado
+Inserted picture=imagen insertada
+Footer=pie de página
+Insert picture=Insertar imagen
+Drawing tools=herramientas de dibujo
+Hyperlink=hipervínculo
+Italic text=texto en cursiva
+Bold text=texto en negrita
+Header=encabezado
+Standard toolbar=barra de herramientas estándar
+thesaurus=diccionario
+fonts=fuentes
+template=plantilla
+spell check=corrector
+layout=distribución/organización
+bold=atrevido/llamativo
+macros=instrucción
+instead of=en lugar de
+however=sin embargo
+acase=gabinete
+stand for=equivale
+wireless=inalámbrico
+scroll wheel=ruedita
+up to=hasta
+yet=aún
+a few=pocos
+i'm early=llego temprano
+        `;
+
+        /**
+         * Parsea el string del glosario crudo (versión que sí funciona local).
+         */
+        function parseGlossaryData(raw) {
+            const glossary = {};
+            const reverseGlossary = {};
+            
+            raw.trim().split('\n').forEach(line => {
+                if (line.trim()) {
+                    const parts = line.split('=');
+                    if (parts.length >= 2) {
+                        const englishRaw = parts[0].trim();
+                        const spanishRaw = parts.slice(1).join('=').trim(); 
+                        
+                        if (englishRaw && spanishRaw) {
+                            const english = englishRaw.toLowerCase().trim();
+                            const spanish = spanishRaw.replace(/\.$/, '').trim();
+                            
+                            glossary[english] = spanish;
+
+                            spanish.split('/').forEach(s => {
+                                const cleanSpanish = s.trim().toLowerCase();
+                                if (!reverseGlossary[cleanSpanish]) {
+                                    reverseGlossary[cleanSpanish] = [];
+                                }
+                                if (!reverseGlossary[cleanSpanish].includes(englishRaw)) {
+                                    reverseGlossary[cleanSpanish].push(englishRaw);
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+
+            const vocabularyList = Object.entries(glossary).filter(([en, es]) => en && es);
+            return { glossary, reverseGlossary, vocabularyList };
+        }
+
+        // --- 2. FUNCIONES DE UTILIDAD PRIVADAS ---
+
+        /**
+         * Normaliza el texto: quita tildes y convierte a minúsculas.
+         */
+        function normalizeText(text) {
+            if (!text) return "";
+            return text.toLowerCase()
+                       .normalize("NFD") // Separa las tildes de las letras
+                       .replace(/[\u0300-\u036f]/g, ""); // Quita las tildes
+        }
+
+        function levenshteinDistance(s1, s2) {
+            const costs = new Array();
+            for (let i = 0; i <= s1.length; i++) {
+                let lastValue = i;
+                for (let j = 0; j <= s2.length; j++) {
+                    if (i === 0) {
+                        costs[j] = j;
+                    } else if (j > 0) {
+                        let newValue = costs[j - 1];
+                        if (s1.charAt(i - 1) !== s2.charAt(j - 1)) {
+                            newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+                        }
+                        costs[j - 1] = lastValue;
+                        lastValue = newValue;
+                    }
+                }
+                if (i > 0) costs[s2.length] = lastValue;
+            }
+            return costs[s2.length];
+        }
+
+        function getWordLength(word) {
+            const lengths = word.split('/').map(s => s.trim().length);
+            return Math.min(...lengths); // Devuelve la longitud de la palabra más corta
+        }
+
+        // --- 3. APLICACIÓN PRINCIPAL DEL JUEGO ---
+        const VocabGame = {
+
+            state: {
+                currentWord: null,
+                score: 0,
+                gameWords: [],
+                currentQuestionIndex: 0,
+                gameMode: 'es_to_en',
+                currentQuestionDirection: 'es_to_en',
+                hintsUsed: 0
+            },
+
+            data: {
+                glossary: {},
+                reverseGlossary: {},
+                vocabularyList: []
+            },
+
+            constants: {
+                TOTAL_QUESTIONS_MAX: 10,
+                MAX_HINTS: 3,
+                LEVENSHTEIN_TOLERANCE: 1,
+                difficultyMap: {
+                    '1': 'easy', '2': 'normal', '3': 'medium', '4': 'hard', '5': 'all' 
+                },
+                // --- TRADUCIDO ---
+                difficultyLabels: {
+                    'easy': 'Easy (Short words)', 
+                    'normal': 'Normal', 
+                    'medium': 'Medium', 
+                    'hard': 'Hard (Long words)', 
+                    'all': 'ALL (Mixed)'
+                },
+                DIFFICULTY_RULES: {
+                    'easy': (word) => getWordLength(word[0]) <= 5, 
+                    'normal': (word) => getWordLength(word[0]) >= 6 && getWordLength(word[0]) <= 8, 
+                    'medium': (word) => getWordLength(word[0]) >= 9 && getWordLength(word[0]) <= 11, 
+                    'hard': (word) => getWordLength(word[0]) >= 12, 
+                    'all': () => true
+                }
+            },
+
+            elements: {},
+
+            init() {
+                try {
+                    this.data = parseGlossaryData(rawGlossary);
+                } catch (error) {
+                    console.error("Error fatal al parsear el glosario:", error);
+                    document.body.innerHTML = `<div style="color:white; padding: 20px;">Error fatal. ${error.message}</div>`;
+                    return;
+                }
+                
+                this.cacheDomElements();
+                this.bindEvents();
+                this.goHome();
+            },
+
+            cacheDomElements() {
+                this.elements.mainHeader = document.getElementById('mainHeader');
+                this.elements.welcomeScreen = document.getElementById('welcomeScreen');
+                this.elements.challengeSetupModal = document.getElementById('challengeSetupModal');
+                this.elements.gameSection = document.getElementById('gameSection');
+                
+                this.elements.showGlossaryBtn = document.getElementById('showGlossaryBtn');
+                this.elements.startGameBtn = document.getElementById('startGameBtn');
+                
+                this.elements.gameModeSelect = document.getElementById('gameModeSelect');
+                this.elements.difficultySlider = document.getElementById('difficultySlider');
+                this.elements.difficultyLabel = document.getElementById('difficultyLabel');
+                this.elements.confirmStartGameBtn = document.getElementById('confirmStartGameBtn');
+                this.elements.setupGoHomeBtn = document.getElementById('setupGoHomeBtn');
+
+                this.elements.gameGoHomeBtn = document.getElementById('gameGoHomeBtn');
+                this.elements.gameModeTitle = document.getElementById('gameModeTitle');
+                this.elements.statusContainer = document.getElementById('statusContainer');
+                this.elements.currentQuestionNumber = document.getElementById('currentQuestionNumber');
+                this.elements.totalQuestionsDisplay = document.getElementById('totalQuestionsDisplay');
+                this.elements.currentScore = document.getElementById('currentScore');
+                this.elements.questionText = document.getElementById('questionText');
+                this.elements.answerInput = document.getElementById('answerInput');
+                this.elements.checkButton = document.getElementById('checkButton');
+                this.elements.hintButton = document.getElementById('hintButton');
+                this.elements.hintsRemaining = document.getElementById('hintsRemaining');
+                this.elements.hintDisplay = document.getElementById('hintDisplay');
+                this.elements.feedbackMessage = document.getElementById('feedbackMessage');
+                this.elements.nextButton = document.getElementById('nextButton');
+
+                this.elements.glossaryModal = document.getElementById('glossaryModal');
+                this.elements.glossaryContent = document.getElementById('glossaryContent');
+                this.elements.sortGlossaryBy = document.getElementById('sortGlossaryBy');
+                this.elements.glossaryCloseXBtn = document.getElementById('glossaryCloseXBtn');
+                this.elements.glossaryCloseBtn = document.getElementById('glossaryCloseBtn');
+
+                this.elements.gameOverModal = document.getElementById('gameOverModal');
+                this.elements.finalScore = document.getElementById('finalScore');
+                this.elements.gameOverRestartBtn = document.getElementById('gameOverRestartBtn');
+                this.elements.gameOverHomeBtn = document.getElementById('gameOverHomeBtn');
+            },
+
+            bindEvents() {
+                this.elements.showGlossaryBtn.addEventListener('click', () => this.showGlossary());
+                this.elements.startGameBtn.addEventListener('click', () => this.startGameSetup());
+                this.elements.confirmStartGameBtn.addEventListener('click', () => this.restartGame());
+                this.elements.setupGoHomeBtn.addEventListener('click', () => this.goHome());
+                this.elements.difficultySlider.addEventListener('input', (e) => this.updateDifficultyLabel(e.target.value));
+                this.elements.gameModeSelect.addEventListener('change', (e) => {
+                    this.state.gameMode = e.target.value;
+                });
+                this.elements.gameGoHomeBtn.addEventListener('click', () => this.goHome());
+                this.elements.checkButton.addEventListener('click', () => this.checkAnswer());
+                this.elements.nextButton.addEventListener('click', () => this.loadNewWord());
+                this.elements.hintButton.addEventListener('click', () => this.giveHint());
+                this.elements.sortGlossaryBy.addEventListener('change', () => this.showGlossary());
+                this.elements.glossaryCloseXBtn.addEventListener('click', () => this.closeModal('glossaryModal'));
+                this.elements.glossaryCloseBtn.addEventListener('click', () => this.closeModal('glossaryModal'));
+                this.elements.gameOverRestartBtn.addEventListener('click', () => this.restartGame());
+                this.elements.gameOverHomeBtn.addEventListener('click', () => this.goHome());
+
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape') {
+                        if (!this.elements.glossaryModal.classList.contains('hidden')) {
+                            this.closeModal('glossaryModal');
+                        } else if (!this.elements.gameOverModal.classList.contains('hidden')) {
+                            this.closeModal('gameOverModal');
+                        }
+                    }
+                    if (event.key === 'Enter' && !this.elements.gameSection.classList.contains('hidden')) {
+                        event.preventDefault(); 
+                        if (document.activeElement === this.elements.answerInput && !this.elements.answerInput.disabled) {
+                            this.checkAnswer();
+                        } else if (this.elements.answerInput.disabled && !this.elements.nextButton.classList.contains('hidden')) {
+                            this.loadNewWord();
+                        }
+                    }
+                });
+            },
+
+            // --- MÉTODOS DE CONTROL DE VISTAS ---
+            
+            goHome() {
+                this.closeModal('glossaryModal');
+                this.closeModal('gameOverModal');
+                this.elements.gameSection.classList.add('hidden');
+                this.elements.challengeSetupModal.classList.add('hidden');
+                this.elements.welcomeScreen.classList.remove('hidden');
+                this.elements.mainHeader.classList.remove('hidden');
+            },
+            
+            startGameSetup() {
+                if (this.data.vocabularyList.length === 0) {
+                    this.elements.questionText.textContent = "The glossary is empty. Cannot start the game."; // Traducido
+                    return;
+                }
+                this.elements.welcomeScreen.classList.add('hidden');
+                this.elements.mainHeader.classList.add('hidden');
+                this.elements.gameSection.classList.add('hidden');
+                this.elements.challengeSetupModal.classList.remove('hidden');
+                this.updateDifficultyLabel(this.elements.difficultySlider.value);
+            },
+            
+            // --- TRADUCIDO ---
+            updateDifficultyLabel(value) {
+                const difficultyKey = this.constants.difficultyMap[value];
+                const label = this.constants.difficultyLabels[difficultyKey];
+                this.elements.difficultyLabel.textContent = `Selected Difficulty: ${label}`; // Traducido
+            },
+            
+            // --- TRADUCIDO ---
+            showGlossary() {
+                this.elements.glossaryContent.innerHTML = '';
+                const sortBy = this.elements.sortGlossaryBy.value;
+                let sortedGlossary = [...this.data.vocabularyList];
+                
+                sortedGlossary.sort((a, b) => {
+                    const index = sortBy === 'english' ? 0 : 1;
+                    return a[index].localeCompare(b[index]);
+                });
+
+                sortedGlossary.forEach(([english, spanish]) => {
+                    const div = document.createElement('div');
+                    div.className = 'bg-[#2f2c79] p-4 rounded-xl border border-[#9ce0db] shadow-md transition hover:shadow-lg hover:bg-[#171a4a]'; 
+                    div.innerHTML = `
+                        <p class="text-sm font-medium text-gray-400 mb-1">ENGLISH:</p> <span class="text-xl font-bold text-[#9ce0db] block">${english.split('/').map(s => s.trim()).join(' / ')}</span>
+                        <p class="text-sm font-medium text-gray-400 mt-3 mb-1 border-t pt-2 border-[#9ce0db]">SPANISH:</p> <span class="text-lg text-gray-200 block">${spanish}</span>
+                    `;
+                    this.elements.glossaryContent.appendChild(div);
+                });
+                this.elements.glossaryModal.classList.remove('hidden');
+            },
+            
+            showGameOver() {
+                const totalWordsPlayed = this.state.gameWords.length;
+                this.elements.finalScore.textContent = `${this.state.score} of ${totalWordsPlayed}`;
+                this.elements.gameOverModal.classList.remove('hidden');
+                this.elements.gameSection.classList.add('hidden');
+            },
+            
+            closeModal(modalId) {
+                const modal = this.elements[modalId];
+                if (modal) {
+                    modal.classList.add('hidden');
+                }
+            },
+
+            // --- MÉTODOS DE LÓGICA DEL JUEGO ---
+
+            restartGame() {
+                this.state.gameMode = this.elements.gameModeSelect.value;
+                this.state.currentQuestionDirection = 'es_to_en'; 
+                this.state.score = 0;
+                this.state.currentWord = null;
+                this.state.currentQuestionIndex = 0;
+                this.elements.currentScore.textContent = 0;
+                this.elements.currentQuestionNumber.textContent = 0;
+
+                this.closeModal('gameOverModal');
+                this.elements.challengeSetupModal.classList.add('hidden');
+                this.elements.gameSection.classList.remove('hidden');
+                this.elements.statusContainer.classList.remove('hidden');
+                this.elements.mainHeader.classList.add('hidden');
+                
+                const sliderValue = this.elements.difficultySlider.value;
+                const difficulty = this.constants.difficultyMap[sliderValue] || 'all'; 
+                const filterFn = this.constants.DIFFICULTY_RULES[difficulty];
+                
+                let availableWords = this.data.vocabularyList.filter(filterFn);
+
+                if (availableWords.length === 0) {
+                    // --- TRADUCIDO ---
+                    this.elements.questionText.textContent = `No words available for difficulty: ${this.constants.difficultyLabels[difficulty]}.`; 
+                    this.elements.checkButton.disabled = true;
+                    this.elements.answerInput.disabled = true;
+                    this.elements.hintButton.disabled = true;
+                    this.elements.statusContainer.classList.add('hidden');
+                    return;
+                }
+                
+                this.elements.checkButton.disabled = false;
+                this.elements.answerInput.disabled = false;
+                this.elements.hintButton.disabled = false;
+
+                const wordsToPick = Math.min(this.constants.TOTAL_QUESTIONS_MAX, availableWords.length);
+                let tempWords = [...availableWords];
+                this.state.gameWords = [];
+                for (let i = 0; i < wordsToPick; i++) {
+                    const randomIndex = Math.floor(Math.random() * tempWords.length);
+                    this.state.gameWords.push(tempWords[randomIndex]);
+                    tempWords.splice(randomIndex, 1);
+                }
+                
+                this.elements.totalQuestionsDisplay.textContent = this.state.gameWords.length;
+                
+                this.loadNewWord();
+            },
+
+            // --- TRADUCIDO ---
+            loadNewWord() {
+                const EFFECTIVE_TOTAL_QUESTIONS = this.state.gameWords.length;
+
+                if (this.state.currentQuestionIndex >= EFFECTIVE_TOTAL_QUESTIONS) {
+                    this.showGameOver();
+                    return;
+                }
+
+                // Reiniciar UI
+                this.elements.answerInput.value = '';
+                this.elements.answerInput.disabled = false;
+                this.elements.checkButton.disabled = false;
+                this.elements.nextButton.classList.add('hidden');
+                this.elements.feedbackMessage.classList.add('hidden');
+                this.elements.feedbackMessage.innerHTML = '';
+                this.elements.answerInput.classList.remove('correct', 'incorrect', 'near-miss');
+                this.elements.hintDisplay.textContent = '';
+                
+                this.state.currentWord = this.state.gameWords[this.state.currentQuestionIndex];
+                this.state.currentQuestionIndex++; 
+                this.elements.currentQuestionNumber.textContent = this.state.currentQuestionIndex;
+
+                this.state.hintsUsed = 0; 
+                this.updateHintUI(); 
+                
+                let direction = this.state.gameMode;
+                if (this.state.gameMode === 'mixed') {
+                    direction = Math.random() < 0.5 ? 'es_to_en' : 'en_to_es'; 
+                    this.state.currentQuestionDirection = direction;
+                }
+
+                if (direction === 'es_to_en') {
+                    this.elements.questionText.textContent = this.state.currentWord[1]; 
+                    this.elements.answerInput.placeholder = "Type the English word here (lowercase)"; // Traducido
+                    this.elements.gameModeTitle.textContent = this.state.gameMode === 'mixed' ? 
+                        "Mixed Mode (Spanish to English)" :  // Traducido
+                        "Guess the Word (Spanish to English)"; // Traducido
+                } else {
+                    this.elements.questionText.textContent = this.state.currentWord[0].split('/').map(s => s.trim()).join(' / ');
+                    this.elements.answerInput.placeholder = "Type the Spanish definition here (lowercase)"; // Traducido
+                    this.elements.gameModeTitle.textContent = this.state.gameMode === 'mixed' ? 
+                        "Mixed Mode (English to Spanish)" :  // Traducido
+                        "Guess the Definition (English to Spanish)"; // Traducido
+                }
+
+                this.elements.answerInput.focus();
+            },
+
+            // --- TRADUCIDO ---
+            checkAnswer() {
+                if (!this.state.currentWord || this.elements.answerInput.disabled) return; 
+
+                const normalizedUserAnswer = normalizeText(this.elements.answerInput.value.trim());
+                const originalUserAnswerLower = this.elements.answerInput.value.toLowerCase().trim();
+                const direction = this.state.gameMode === 'mixed' ? this.state.currentQuestionDirection : this.state.gameMode;
+
+                let correctNormalizedAnswers, displayTarget, correctNormalizedTarget;
+                let feedbackColorClass, feedbackHTML;
+                let isCorrect = false;
+                let isNearMiss = false;
+
+                if (direction === 'es_to_en') {
+                    displayTarget = this.state.currentWord[0].split('/').map(s => s.trim()).join(' / ');
+                    correctNormalizedAnswers = this.state.currentWord[0].split('/').map(s => normalizeText(s.trim()));
+                    correctNormalizedTarget = correctNormalizedAnswers[0];
+                } else {
+                    displayTarget = this.state.currentWord[1];
+                    correctNormalizedAnswers = this.state.currentWord[1].split('/').map(s => normalizeText(s.trim()));
+                    correctNormalizedTarget = correctNormalizedAnswers[0];
+                }
+
+                isCorrect = correctNormalizedAnswers.some(ans => ans === normalizedUserAnswer);
+
+                if (!isCorrect) {
+                    correctNormalizedAnswers.forEach(ans => {
+                        const distance = levenshteinDistance(normalizedUserAnswer, ans);
+                        const maxLen = Math.max(normalizedUserAnswer.length, ans.length);
+                        if (distance <= this.constants.LEVENSHTEIN_TOLERANCE && distance < maxLen / 2) {
+                            isNearMiss = true;
+                        }
+                    });
+                }
+
+                if (isCorrect) {
+                    this.state.score++;
+                    this.elements.currentScore.textContent = this.state.score;
+                    feedbackColorClass = 'bg-green-900 text-green-300 border-green-500';
+                    feedbackHTML = `<p class="font-extrabold text-xl">Correct!</p> <p>Excellent work. The answer was: <span class="text-green-200 font-black">"${displayTarget}"</span></p>`; // Traducido
+                    this.elements.answerInput.classList.add('correct');
+                } else if (isNearMiss) {
+                    feedbackColorClass = 'bg-amber-900 text-amber-300 border-amber-500';
+                    feedbackHTML = `<p class="font-extrabold text-xl">Almost!</p> 
+                                     <p>Your answer was very close. The correct answer was: <span class="text-amber-200 font-black">"${displayTarget}"</span></p>`; // Traducido
+                    this.elements.answerInput.classList.add('near-miss');
+                } else {
+                    feedbackColorClass = 'bg-red-900 text-red-300 border-red-500';
+                    this.elements.answerInput.classList.add('incorrect');
+                    
+                    let translationFeedback = '';
+                    if (direction === 'es_to_en') {
+                        const foundSpanish = this.data.glossary[originalUserAnswerLower];
+                        translationFeedback = foundSpanish ? `<p class="mt-2 text-sm">Your word ("${originalUserAnswerLower}") means: <span class="font-bold">${foundSpanish}</span></p>` : ''; // Traducido
+                    } else {
+                        const foundEnglish = this.data.reverseGlossary[originalUserAnswerLower];
+                        const englishDisplay = foundEnglish ? foundEnglish.join(' / ') : '';
+                        translationFeedback = foundEnglish ? `<p class="mt-2 text-sm">Your word ("${originalUserAnswerLower}") means in English: <span class="font-bold">${englishDisplay}</span></p>` : ''; // Traducido
+                    }
+
+                    feedbackHTML = `<p class="font-extrabold text-xl">Incorrect.</p> 
+                                    <p>The correct answer was: <span class="text-red-200 font-black">"${displayTarget}"</span></p>
+                                    ${translationFeedback}`; // Traducido
+                }
+
+                this.elements.answerInput.disabled = true;
+                this.elements.checkButton.disabled = true;
+                this.elements.nextButton.classList.remove('hidden');
+                this.elements.feedbackMessage.classList.remove('hidden');
+                this.elements.feedbackMessage.className = `mt-4 p-4 rounded-lg text-left font-bold shadow-sm ${feedbackColorClass}`;
+                this.elements.feedbackMessage.innerHTML = feedbackHTML;
+                this.elements.hintButton.disabled = true; 
+                
+                const finalHintTarget = (direction === 'es_to_en') ? this.state.currentWord[0].split('/')[0] : this.state.currentWord[1].split('/')[0];
+                this.elements.hintDisplay.textContent = finalHintTarget.toUpperCase().split('').join(' ');
+
+                if (this.state.currentQuestionIndex === this.state.gameWords.length) {
+                    this.elements.nextButton.textContent = "View Results"; // Traducido
+                } else {
+                    this.elements.nextButton.textContent = "Next Word"; // Traducido
+                }
+                
+                this.elements.nextButton.focus();
+            },
+
+            // --- MÉTODOS DE PISTAS ---
+            
+            updateHintUI() {
+                this.elements.hintsRemaining.textContent = this.constants.MAX_HINTS - this.state.hintsUsed;
+                this.elements.hintButton.disabled = this.state.hintsUsed >= this.constants.MAX_HINTS || this.elements.answerInput.disabled;
+            },
+            
+            getTargetWordForHint() {
+                const direction = this.state.gameMode === 'mixed' ? this.state.currentQuestionDirection : this.state.gameMode;
+                const target = direction === 'es_to_en' ? this.state.currentWord[0] : this.state.currentWord[1];
+                return target.toLowerCase().trim().split('/')[0];
+            },
+            
+            giveHint() {
+                if (!this.state.currentWord || this.state.hintsUsed >= this.constants.MAX_HINTS || this.elements.answerInput.disabled) return;
+
+                this.state.hintsUsed++;
+                this.updateHintUI();
+
+                const targetWordBase = this.getTargetWordForHint();
+                let currentHint = this.elements.hintDisplay.textContent.replace(/ /g, '');
+                
+                if (!currentHint || currentHint.length !== targetWordBase.length) {
+                    currentHint = Array(targetWordBase.length).fill('_').join('');
+                }
+
+                let found = false;
+                let safetyCounter = 0; 
+                
+                while (!found && safetyCounter < targetWordBase.length * 2) {
+                    const randomIndex = Math.floor(Math.random() * targetWordBase.length);
+                    if (currentHint[randomIndex] === '_') {
+                        const newHintArray = currentHint.split('');
+                        newHintArray[randomIndex] = targetWordBase[randomIndex];
+                        currentHint = newHintArray.join('');
+                        found = true;
+                    }
+                    safetyCounter++;
+                }
+
+                this.elements.hintDisplay.textContent = currentHint.toUpperCase().split('').join(' ');
+            }
+        };
+
+        // --- 4. INICIO DE LA APLICACIÓN ---
+        document.addEventListener('DOMContentLoaded', () => {
+            VocabGame.init();
+        });
+
+    })(); // Fin de la IIFE
+    </script>
+</body>
+</html>
